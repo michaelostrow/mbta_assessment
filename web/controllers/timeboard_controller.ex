@@ -7,7 +7,7 @@ defmodule MbtaAssessment.TimeboardController do
 
     # display an error if the request fails
     if !HTTPotion.Response.success?(response) do
-      render conn, "index.html", timeboard: "Error getting timeboard data from MBTA API."
+      conn |> send_resp(500, '')
     end
 
     timeboard = get_json_timeboard(response.body)
@@ -15,6 +15,7 @@ defmodule MbtaAssessment.TimeboardController do
     conn |> send_resp(200, timeboard)
   end
 
+  # do some parsing on the CSV data returned so it can be returned to the frontend as JSON
   def get_json_timeboard(raw_timeboard) do
     timeboard_entries = String.split(raw_timeboard, "\n")
     timeboard_entries = List.delete_at(timeboard_entries, -1)
